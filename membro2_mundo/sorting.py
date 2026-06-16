@@ -12,6 +12,7 @@ ORDEM_RARIDADE = {
     "lendaria": 5,
 }
 
+
 def valor_chave(item: dict, chave: str):
     if chave == "raridade":
         return ORDEM_RARIDADE.get(item.get("raridade", "comum"), 0)

@@ -51,6 +51,15 @@ TRECHOS_DISTORCIDOS = [
         "descricao": "a névoa muda os sons de lugar e confunde a direção.",
         "elemento": "water",
         "fraqueza_extra": "thunder",
+        "aquatico": True,
+    },
+    {
+        "nome": "Lago Suspenso Furta-cor",
+        "descricao": "um lago impossível flutua entre raízes, refletindo cores que não ficam paradas.",
+        "elemento": "water",
+        "fraqueza_extra": "thunder",
+        "aquatico": True,
+        "raro": True,
     },
 ]
 
@@ -130,6 +139,18 @@ ARQUETIPOS_MOBS = [
 ]
 
 
+
+PEROLA_FURTA_COR = {
+    "nome": "Pérola Furta-cor",
+    "tipo": "chave",
+    "raridade": "lendaria",
+    "peso": 1,
+    "valor_magico": 120,
+    "preco": 0,
+    "efeitos": {},
+    "descricao": "Cristalização da Canção das Águas. Mantém a pureza das águas doces.",
+}
+
 RECOMPENSAS_DUNGEON = [
     {
         "nome": "Poção Média de HP",
@@ -175,6 +196,29 @@ RECOMPENSAS_DUNGEON = [
     },
 ]
 
+RECOMPENSAS_DUNGEON.extend([
+    {
+        "nome": "Semente de Guaraná",
+        "tipo": "consumivel",
+        "raridade": "incomum",
+        "peso": 1,
+        "valor_magico": 18,
+        "preco": 35,
+        "efeitos": {"regen_hp": 10, "regen_mana": 5, "duracao_turnos": 4},
+        "descricao": "Regenera 10 HP e 5 mana por turno durante 4 turnos.",
+    },
+    {
+        "nome": "Pedra Fluorescente Grande",
+        "tipo": "material",
+        "raridade": "rara",
+        "peso": 2,
+        "valor_magico": 35,
+        "preco": 45,
+        "efeitos": {},
+        "descricao": "Cristal raro gerado pela Floresta Distorcida.",
+    },
+])
+
 
 def garantir_estado_dungeon(estado: dict) -> None:
     """Cria os campos de controle da dungeon caso ainda não existam."""
@@ -182,6 +226,7 @@ def garantir_estado_dungeon(estado: dict) -> None:
     estado["floresta_distorcida"].setdefault("entradas", 0)
     estado["floresta_distorcida"].setdefault("maior_profundidade", 0)
     estado["floresta_distorcida"].setdefault("mobs_derrotados", 0)
+    estado["floresta_distorcida"].setdefault("perola_furta_cor_encontrada", False)
 
 
 def calcular_nivel_mob(estado: dict, profundidade: int) -> int:
@@ -192,13 +237,34 @@ def calcular_nivel_mob(estado: dict, profundidade: int) -> int:
     return max(1, nivel_mob)
 
 
+
+
+def escolher_trecho_distorcido(profundidade: int) -> dict:
+    """Escolhe um trecho da Floresta Distorcida.
+
+    Trechos raros possuem baixa chance de aparecer. Isso permite que a Pérola
+    Furta-cor da quest da Beatriz surja apenas em mapas aquáticos e com baixa
+    probabilidade nos dados.
+    """
+    trechos_comuns = [trecho for trecho in TRECHOS_DISTORCIDOS if not trecho.get("raro")]
+    trechos_raros = [trecho for trecho in TRECHOS_DISTORCIDOS if trecho.get("raro")]
+
+    # Chance baixa: começa em 5% e sobe pouco com a profundidade, limitada a 12%.
+    chance_rara = min(0.12, 0.05 + (profundidade * 0.005))
+
+    if trechos_raros and random() < chance_rara:
+        return choice(trechos_raros)
+
+    return choice(trechos_comuns)
+
+
 def gerar_criatura_distorcida(estado: dict, profundidade: int) -> dict:
     """Gera uma criatura nova a cada sala.
 
     O resultado usa o mesmo contrato de dados dos inimigos normais do jogo,
     então pode ser enviado diretamente para o sistema de combate.
     """
-    trecho = choice(TRECHOS_DISTORCIDOS)
+    trecho = escolher_trecho_distorcido(profundidade)
     base = choice(ARQUETIPOS_MOBS)
     nivel_mob = calcular_nivel_mob(estado, profundidade)
 
@@ -225,6 +291,8 @@ def gerar_criatura_distorcida(estado: dict, profundidade: int) -> dict:
         "trecho": trecho["nome"],
         "elemento_distorcido": trecho["elemento"],
         "descricao_trecho": trecho["descricao"],
+        "trecho_aquatico": trecho.get("aquatico", False),
+        "trecho_raro": trecho.get("raro", False),
     }
     return criatura
 
@@ -234,6 +302,42 @@ def _curar_ao_sair(estado: dict) -> None:
     status_total = calcular_status_total(estado)
     estado["status"]["hp"] = max(1, min(status_total["hp_max"], estado["status"].get("hp", 1)))
     estado["status"]["mana"] = max(0, min(status_total["mana_max"], estado["status"].get("mana", 0)))
+
+
+
+
+def _tentar_recompensa_beatriz(estado: dict, criatura: dict, profundidade: int) -> bool:
+    """Tenta entregar a Pérola Furta-cor em uma sala aquática rara.
+
+    A chance é baixa e depende do trecho da dungeon:
+    - só funciona em trecho aquático;
+    - aumenta levemente com a profundidade;
+    - só entrega uma vez por jogo.
+    """
+    dungeon = estado.get("floresta_distorcida", {})
+    if dungeon.get("perola_furta_cor_encontrada"):
+        return False
+
+    if not criatura.get("trecho_aquatico"):
+        return False
+
+    # Chance baixa: 8% + 1% por profundidade, com limite de 18%.
+    chance = min(0.18, 0.08 + (profundidade * 0.01))
+
+    # Se o trecho for o Lago Suspenso Furta-cor, a chance é melhor,
+    # mas o próprio mapa já tem baixa chance de aparecer.
+    if criatura.get("trecho_raro"):
+        chance = max(chance, 0.35)
+
+    if random() > chance:
+        return False
+
+    adicionar_item(estado, PEROLA_FURTA_COR.copy())
+    estado["floresta_distorcida"]["perola_furta_cor_encontrada"] = True
+    print("\nA água distorcida canta baixinho entre as raízes.")
+    print("Henry encontrou a Pérola Furta-cor — a Canção das Águas cristalizada.")
+    print("Beatriz precisa desse item para proteger os animais aquáticos de água doce.")
+    return True
 
 
 def _premio_pos_sala(estado: dict, profundidade: int) -> None:
@@ -271,27 +375,39 @@ def explorar_floresta_distorcida(estado: dict) -> None:
             estado["floresta_distorcida"]["maior_profundidade"], profundidade
         )
 
-        print(f"\n--- Profundidade {profundidade} ---")
+        print("\n" + "=" * 56)
+        print(f"FLORESTA DISTORCIDA — SALA {profundidade:02d}".center(56))
+        print("=" * 56)
         print(f"Trecho: {criatura['trecho']}")
+        if criatura.get("trecho_aquatico"):
+            print("Tipo de trecho: aquático")
+        if criatura.get("trecho_raro"):
+            print("Raridade do trecho: raro")
         print(f"Descrição: {criatura['descricao_trecho']}")
         print("A distorção muda o padrão dos monstros deste trecho.")
-        print(
-            f"Mob gerado: {criatura['nome']} | HP {criatura['hp']} | "
-            f"ATQ {criatura['ataque']} | DEF {criatura['defesa']}"
-        )
-        print(f"Fraquezas: {', '.join(criatura['fraquezas'])}")
+        print("-" * 56)
+        print("PRÓXIMO ENCONTRO")
+        print(f"Inimigo:     {criatura['nome']}")
+        print(f"HP:          {criatura['hp']}")
+        print(f"ATQ/DEF:     {criatura['ataque']} / {criatura['defesa']}")
+        print(f"Fraquezas:   {', '.join(criatura['fraquezas'])}")
+        print(f"Resistência: {', '.join(criatura.get('resistencias', [])) or 'nenhuma'}")
+        print("=" * 56)
 
-        venceu = iniciar_combate_contra(estado, criatura, contexto="Floresta Distorcida")
+        venceu = iniciar_combate_contra(estado, criatura, contexto=f"Floresta Distorcida — Sala {profundidade:02d}")
+
+        if estado["status"].get("hp", 0) <= 0:
+            print("\nA Floresta Distorcida expulsou Henry e Mitis de volta para a Vila das Preguiças.")
+            _curar_ao_sair(estado)
+            return
 
         if not venceu:
-            if estado["status"].get("hp", 1) <= 1 and estado["local_atual"] == "Vila das Preguiças":
-                print("\nA Floresta Distorcida expulsou Henry e Mitis de volta para a Vila das Preguiças.")
-            else:
-                print("\nHenry e Mitis escaparam antes de dominar a sala. Nenhuma recompensa da dungeon foi entregue.")
+            print("\nHenry e Mitis escaparam antes de dominar a sala. Nenhuma recompensa da dungeon foi entregue.")
             _curar_ao_sair(estado)
             return
 
         estado["floresta_distorcida"]["mobs_derrotados"] += 1
+        _tentar_recompensa_beatriz(estado, criatura, profundidade)
         _premio_pos_sala(estado, profundidade)
 
         print("\nA trilha se reorganiza diante de Henry.")

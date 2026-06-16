@@ -12,6 +12,16 @@ ITENS_POR_LOCAL = {
             "efeitos": {"hp": 30},
             "descricao": "Restaura 30 pontos de HP.",
         },
+        {
+            "nome": "Algodão Macio",
+            "tipo": "material",
+            "raridade": "comum",
+            "peso": 1,
+            "valor_magico": 3,
+            "preco": 5,
+            "efeitos": {},
+            "descricao": "Fibra leve usada por Camila para criar capas e mantos.",
+        },
     ],
     "Lago das Capivaras": [
         {
@@ -25,6 +35,17 @@ ITENS_POR_LOCAL = {
             "efeitos": {"hp_max": 20},
             "descricao": "+20 de HP máximo.",
         },
+        {
+            "nome": "Concha Rosada da Beatriz",
+            "tipo": "material",
+            "raridade": "incomum",
+            "peso": 1,
+            "valor_magico": 12,
+            "preco": 18,
+            "efeitos": {},
+            "descricao": "Uma concha rosada encontrada perto da margem onde Beatriz costuma aparecer.",
+        },
+
         {
             "nome": "Poção de Mana",
             "tipo": "consumivel",
@@ -46,6 +67,16 @@ ITENS_POR_LOCAL = {
             "preco": 10,
             "efeitos": {},
             "descricao": "Flor usada por Camila para acalmar as formigas luminosas.",
+        },
+        {
+            "nome": "Algodão Macio",
+            "tipo": "material",
+            "raridade": "comum",
+            "peso": 1,
+            "valor_magico": 3,
+            "preco": 5,
+            "efeitos": {},
+            "descricao": "Algodão recolhido entre as raízes do Bosque do Ipê.",
         },
         {
             "nome": "Capa de Ipê Roxo",
@@ -184,6 +215,140 @@ ITENS_POR_LOCAL = {
         }
     ],
 }
+
+
+# Itens extras adicionados para aumentar a variedade de coleta, loja e crafting.
+ITENS_POR_LOCAL["Vila das Preguiças"].extend([
+    {
+        "nome": "Folha de Guaraná",
+        "tipo": "material",
+        "raridade": "comum",
+        "peso": 1,
+        "valor_magico": 6,
+        "preco": 8,
+        "efeitos": {},
+        "descricao": "Folha usada em receitas de recuperação e chás energéticos.",
+    },
+    {
+        "nome": "Pedra Fluorescente Pequena",
+        "tipo": "material",
+        "raridade": "incomum",
+        "peso": 1,
+        "valor_magico": 15,
+        "preco": 18,
+        "efeitos": {},
+        "descricao": "Pedra que brilha no escuro e reage à magia da Árvore do Mundo.",
+    },
+])
+
+ITENS_POR_LOCAL["Lago das Capivaras"].extend([
+    {
+        "nome": "Semente de Guaraná",
+        "tipo": "consumivel",
+        "raridade": "incomum",
+        "peso": 1,
+        "valor_magico": 18,
+        "preco": 35,
+        "efeitos": {"regen_hp": 10, "regen_mana": 5, "duracao_turnos": 4},
+        "descricao": "Regenera 10 HP e 5 mana por turno durante 4 turnos (12s narrativos).",
+    },
+    {
+        "nome": "Anel de Guaraná",
+        "tipo": "equipamento",
+        "slot": "anel",
+        "raridade": "incomum",
+        "peso": 1,
+        "valor_magico": 28,
+        "preco": 65,
+        "efeitos": {"hp_max": 10, "mana_max": 10},
+        "descricao": "+10 HP máximo e +10 mana máxima.",
+    },
+])
+
+ITENS_POR_LOCAL["Bosque do Ipê"].extend([
+    {
+        "nome": "Flor Azul de Mana",
+        "tipo": "material",
+        "raridade": "incomum",
+        "peso": 1,
+        "valor_magico": 20,
+        "preco": 20,
+        "efeitos": {},
+        "descricao": "Flor usada em receitas mágicas e encantamentos de mana.",
+    },
+    {
+        "nome": "Folha de Ipê Dourada",
+        "tipo": "material",
+        "raridade": "rara",
+        "peso": 1,
+        "valor_magico": 24,
+        "preco": 25,
+        "efeitos": {},
+        "descricao": "Folha rara que guarda energia solar.",
+    },
+])
+
+ITENS_POR_LOCAL["Ruínas da Arpia"].extend([
+    {
+        "nome": "Amuleto de Pedra Fluorescente",
+        "tipo": "equipamento",
+        "slot": "amuleto",
+        "raridade": "rara",
+        "peso": 1,
+        "valor_magico": 48,
+        "preco": 90,
+        "efeitos": {"magia": 1, "mana_max": 20},
+        "descricao": "+1 magia e +20 mana máxima.",
+    },
+    {
+        "nome": "Anel das Folhas Claras",
+        "tipo": "equipamento",
+        "slot": "anel",
+        "raridade": "incomum",
+        "peso": 1,
+        "valor_magico": 32,
+        "preco": 70,
+        "efeitos": {"defesa": 1, "cure": 1},
+        "descricao": "+1 defesa e +1 bônus de Cure.",
+    },
+])
+
+ITENS_POR_LOCAL["Caverna dos Golems"].extend([
+    {
+        "nome": "Pedra Fluorescente Grande",
+        "tipo": "material",
+        "raridade": "rara",
+        "peso": 2,
+        "valor_magico": 35,
+        "preco": 45,
+        "efeitos": {},
+        "descricao": "Cristal de caverna usado para equipamentos de defesa e magia.",
+    },
+    {
+        "nome": "Amuleto da Raiz Profunda",
+        "tipo": "equipamento",
+        "slot": "amuleto",
+        "raridade": "epica",
+        "peso": 1,
+        "valor_magico": 75,
+        "preco": 135,
+        "efeitos": {"defesa": 2, "quake": 1},
+        "descricao": "+2 defesa e +1 bônus de Quake.",
+    },
+])
+
+ITENS_POR_LOCAL["Clareira da Árvore do Mundo"].extend([
+    {
+        "nome": "Flor Estelar da Clareira",
+        "tipo": "material",
+        "raridade": "lendaria",
+        "peso": 1,
+        "valor_magico": 90,
+        "preco": 0,
+        "efeitos": {},
+        "descricao": "Flor luminosa que só aparece perto da Árvore do Mundo.",
+    },
+])
 
 CRIATURAS_POR_LOCAL = {
     "Lago das Capivaras": {

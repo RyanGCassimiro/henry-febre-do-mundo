@@ -160,6 +160,38 @@ QUESTS_PERSONAGENS = {
             },
         },
     },
+    "beatriz": {
+        "personagem": "Beatriz",
+        "especie": "boto-cor-de-rosa",
+        "titulo": "A Canção das Águas",
+        "local": "Lago das Capivaras",
+        "descricao": (
+            "Beatriz procura a Canção das Águas, um item mágico entregue aos animais "
+            "aquáticos de água doce para manter a pureza das águas. A canção se cristalizou "
+            "em uma Pérola Furta-cor e acabou perdida em um trecho aquático raro da Floresta Distorcida."
+        ),
+        "requisitos": {
+            "local": "Lago das Capivaras",
+            "itens": ["Pérola Furta-cor"],
+        },
+        "recompensa": {
+            "exp": 90,
+            "moedas": 80,
+            "skill_points": 2,
+            "item": {
+                "nome": "Amuleto da Canção das Águas",
+                "tipo": "equipamento",
+                "slot": "amuleto",
+                "raridade": "epica",
+                "peso": 1,
+                "valor_magico": 85,
+                "preco": 160,
+                "efeitos": {"mana_max": 30, "water": 2, "cura": 1},
+                "descricao": "Amuleto dado por Beatriz. Fortalece Water, cura e aumenta a mana máxima.",
+            },
+        },
+    },
+
 }
 
 
