@@ -136,6 +136,73 @@ ESTOQUE_CAPIVARA = [
 ]
 
 
+ESTOQUE_CAPIVARA.extend([
+    {
+        "nome": "Semente de Guaraná",
+        "tipo": "consumivel",
+        "raridade": "incomum",
+        "peso": 1,
+        "valor_magico": 18,
+        "preco": 35,
+        "efeitos": {"regen_hp": 10, "regen_mana": 5, "duracao_turnos": 4},
+        "descricao": "Regenera 10 HP e 5 mana por turno durante 4 turnos (12s narrativos).",
+    },
+    {
+        "nome": "Anel de Guaraná",
+        "tipo": "equipamento",
+        "slot": "anel",
+        "raridade": "incomum",
+        "peso": 1,
+        "valor_magico": 28,
+        "preco": 65,
+        "efeitos": {"hp_max": 10, "mana_max": 10},
+        "descricao": "+10 HP máximo e +10 mana máxima.",
+    },
+    {
+        "nome": "Amuleto de Pedra Fluorescente",
+        "tipo": "equipamento",
+        "slot": "amuleto",
+        "raridade": "rara",
+        "peso": 1,
+        "valor_magico": 48,
+        "preco": 90,
+        "efeitos": {"magia": 1, "mana_max": 20},
+        "descricao": "+1 magia e +20 mana máxima.",
+    },
+    {
+        "nome": "Anel das Folhas Claras",
+        "tipo": "equipamento",
+        "slot": "anel",
+        "raridade": "incomum",
+        "peso": 1,
+        "valor_magico": 32,
+        "preco": 70,
+        "efeitos": {"defesa": 1, "cure": 1},
+        "descricao": "+1 defesa e +1 bônus de Cure.",
+    },
+    {
+        "nome": "Folha de Guaraná",
+        "tipo": "material",
+        "raridade": "comum",
+        "peso": 1,
+        "valor_magico": 6,
+        "preco": 8,
+        "efeitos": {},
+        "descricao": "Material para receitas de recuperação.",
+    },
+    {
+        "nome": "Pedra Fluorescente Pequena",
+        "tipo": "material",
+        "raridade": "incomum",
+        "peso": 1,
+        "valor_magico": 15,
+        "preco": 18,
+        "efeitos": {},
+        "descricao": "Material brilhante usado em criação de amuletos.",
+    },
+])
+
+
 def abrir_loja_capivara(estado: dict) -> None:
     print("\n=== LOJA DA CAPIVARA ===")
     print('A Capivara comerciante sorri: "Compra, vende, troca... só não aceito fiado."')
