@@ -18,14 +18,7 @@ from typing import Callable
 from membro2_mundo.combate import iniciar_combate_contra
 from membro2_mundo.progressao import calcular_status_total, garantir_estado_magias
 from membro3_inventario.inventory import adicionar_item
-from membro2_mundo.dados import aplicar_teste_mobilidade
-from random import choice, randint, random
-from typing import Callable
-
-from membro2_mundo.combate import iniciar_combate_contra
-from membro2_mundo.progressao import calcular_status_total, garantir_estado_magias
-from membro3_inventario.inventory import adicionar_item
-from membro2_mundo.dados import aplicar_teste_mobilidade
+from membro2_mundo.dados import aplicar_teste_mobilidade, rolar_d20
 from membro2_mundo.dialogos_henry_mitis import dialogo_perola_furta_cor
 
 TRECHOS_DISTORCIDOS = [
@@ -361,6 +354,62 @@ def _premio_pos_sala(estado: dict, profundidade: int) -> None:
     adicionar_item(estado, item)
     print(f"\nA floresta deixou uma recompensa para trás: {item['nome']}.")
 
+def evento_pedra_estranha(estado: dict) -> None:
+    print("\nHenry e Mitis encontram um beco sem saída.")
+    print("Há um desenho estranho gravado na pedra.")
+    print("\n1 - Examinar o desenho")
+    print("2 - Dar meia-volta")
+
+    escolha = input("Escolha: ").strip()
+
+    if escolha != "1":
+        print("\nHenry decide não mexer na pedra.")
+        print("Mitis observa o símbolo desaparecer atrás da névoa.")
+        return
+
+    rolagem = rolar_d20()
+    print(f"\nRolagem de investigação: D20 = {rolagem}")
+
+    if rolagem == 20:
+        item = {
+            "nome": "Fragmento de Seiva Antiga",
+            "tipo": "material",
+            "raridade": "raro",
+            "peso": 1,
+            "valor_magico": 40,
+            "preco": 80,
+            "descricao": "Um fragmento antigo escondido em uma pedra marcada por símbolos da Árvore do Mundo.",
+        }
+
+        print("\nSucesso crítico!")
+        print("A pedra se abre e revela um item raro.")
+        adicionar_item(estado, item)
+
+    elif rolagem >= 16:
+        item = {
+            "nome": "Fragmento de Seiva",
+            "tipo": "material",
+            "raridade": "incomum",
+            "peso": 1,
+            "valor_magico": 20,
+            "preco": 40,
+            "descricao": "Um pequeno fragmento de seiva mágica encontrado na Floresta Distorcida.",
+        }
+
+        print("\nSucesso!")
+        print("Henry encontra um fragmento escondido.")
+        adicionar_item(estado, item)
+
+    elif rolagem >= 10:
+        print("\nSucesso parcial.")
+        print("Henry encontra algumas moedas antigas.")
+        estado["moedas"] = estado.get("moedas", 0) + 10
+
+    else:
+        print("\nFalha!")
+        print("A pedra libera uma poeira mágica instável.")
+        estado["hp"] = max(1, estado.get("hp", 1) - 5)
+
 
 def explorar_floresta_distorcida(estado: dict) -> None:
     """Loop principal da dungeon dinâmica.
@@ -378,7 +427,7 @@ def explorar_floresta_distorcida(estado: dict) -> None:
     print("\n=== FLORESTA DISTORCIDA ===")
     print("Henry e Mitis atravessam uma fenda lilás aberta pelas preguiças guardiãs.")
     print("Este lugar muda a cada entrada. Os caminhos e os mobs escalam com o nível de Henry.")
-
+    
     while estado["status"].get("hp", 0) > 0:
         criatura = gerar_criatura_distorcida(estado, profundidade)
         estado["floresta_distorcida"]["maior_profundidade"] = max(
@@ -419,6 +468,9 @@ def explorar_floresta_distorcida(estado: dict) -> None:
         estado["floresta_distorcida"]["mobs_derrotados"] += 1
         _tentar_recompensa_beatriz(estado, criatura, profundidade)
         _premio_pos_sala(estado, profundidade)
+
+        if random() < 0.30:
+            evento_pedra_estranha(estado)
 
         print("\nA trilha se reorganiza diante de Henry.")
         print("1 - Continuar mais fundo")
