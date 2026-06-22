@@ -12,22 +12,50 @@ python main.py
 
 Não precisa instalar bibliotecas externas.
 
+## Como testar
+
+```bash
+python -m compileall -q .
+python tests/smoke_test.py
+```
+
 ## Requisitos atendidos
 
 - TSP para calcular a melhor rota entre os locais da missão.
 - Inventário como estrutura de dados.
-- Coleta de itens nos locais do mapa.
+- Coleta narrativa de itens nos locais do mapa, com pistas, escolhas e D20.
 - MergeSort para ordenar o inventário.
 - Loja da Capivara para compra e venda.
+- Conversas com NPCs, incluindo rumores aleatórios da Capivara.
 - Poções de HP e mana.
 - Equipamentos com bônus de status e bônus elementais.
 - Combate com magias de Henry e habilidades de Mitis.
+- HUD de batalha separado entre grupo do jogador e inimigo.
 - Quests dos aliados: Camila, Eduardo, Monique, Pietra e Santiago.
 - Santiago como tucano navegador, liberado após cálculo da rota TSP.
 - Progressão por EXP, level up e pontos de habilidade.
 - Floresta Distorcida: dungeon paralela que muda a cada entrada.
 - Save/load em JSON.
-- Dungeon dinâmica: Floresta Distorcida, com salas aleatórias e mobs que escalam com o nível de Henry.
+- Dungeon dinâmica: Floresta Distorcida, com salas aleatórias, eventos narrativos, acampamento com risco e mobs que escalam com o nível de Henry.
+
+## Menu principal
+
+O menu principal foi organizado em submenus para reduzir a poluição visual:
+
+```txt
+1 - Explorar
+2 - Inventário
+3 - Personagem
+4 - Missões
+5 - Sistema
+0 - Sair
+```
+
+- **Explorar:** mapa, viagem, coleta, combate local, NPCs, Floresta Distorcida e Loja da Capivara.
+- **Inventário:** ver, ordenar, consultar, usar consumível, equipar e remover itens.
+- **Personagem:** status, habilidades e evolução.
+- **Missões:** missão principal, rota TSP e quests dos aliados.
+- **Sistema:** salvar, carregar e créditos.
 
 ## Personagens principais
 
@@ -68,16 +96,37 @@ Ao subir de nível:
 - Henry ganha pontos de habilidade;
 - os pontos podem ser gastos em famílias de magia.
 
-Exemplo:
+Cada família possui subníveis antes de trocar para a próxima magia. Exemplo:
 
 ```txt
 fire nível 0 → Fire
-fire nível 1 → Fira
-fire nível 2 → Firaga
-fire nível 3 ou mais → Firaja
+fire nível 1 → Fire I
+fire nível 2 → Fire II
+fire nível 3 → Fire III
+fire nível 4 → Fira
 ```
 
 A mesma regra vale para Blizzard, Thunder, Water, Dark, Quake, Cure, Haste, Protect e Shell.
+
+## Coleta narrativa
+
+A coleta não mostra mais uma lista direta de itens disponíveis. Em vez disso, o jogo apresenta uma cena curta de exploração:
+
+```txt
+Há um arbusto de formato estranho perto da trilha.
+Mitis observa o lugar com atenção.
+
+Deseja verificar o arbusto?
+1 - Sim
+2 - Não
+```
+
+Se Henry investigar, uma rolagem de D20 decide o resultado:
+
+- **20:** encontra item e moedas.
+- **12-19:** encontra item.
+- **8-11:** nada útil acontece.
+- **1-7:** Henry sofre uma consequência e perde HP.
 
 ## Floresta Distorcida
 
@@ -89,6 +138,24 @@ A Floresta Distorcida é uma dungeon. Ela muda a cada entrada e cada sala sortei
 - recompensas possíveis.
 
 Os mobs escalam com o nível de Henry e com a profundidade da exploração.
+
+Além do combate normal, a Floresta pode disparar eventos narrativos:
+
+- **Pedra Estranha:** investigação com D20, podendo gerar fragmentos, moedas ou dano.
+- **Voz Distorcida:** Henry e Mitis podem seguir uma voz misteriosa para encontrar itens, recuperar mana ou sofrer dano.
+- **Chão Desaparece:** evento de reflexo que pode devolver o grupo para a sala inicial.
+- **Toca de Mitis:** evento raro em que Mitis entra em uma toca e Henry enfrenta combates sozinho enquanto Mitis investiga runas e um altar de Terra.
+- **Acampamento:** depois de vencer uma sala, o jogador pode arriscar descansar. Um D20 define recuperação, penalidade ou emboscada.
+
+Quando Mitis está separado, o combate mostra `BATALHA — HENRY` e bloqueia a opção de habilidades do Mitis.
+
+Depois de vencer uma sala da Floresta, o jogador pode:
+
+```txt
+1 - Continuar mais fundo
+2 - Acampar antes de continuar
+3 - Sair da Floresta Distorcida
+```
 
 ## Quests dos aliados
 
